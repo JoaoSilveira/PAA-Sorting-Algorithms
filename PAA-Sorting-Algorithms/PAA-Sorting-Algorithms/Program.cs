@@ -31,9 +31,15 @@ namespace PAA_Sorting_Algorithms
 
         static void Main(string[] args)
         {
+            if (args.Length != 1)
+            {
+                Console.WriteLine("Write the path to the data directory");
+                return;
+            }
+
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
-            foreach (var filePath in Directory.GetFiles(@"C:\Users\Malaquias\Source\Repos\PAA-Sorting-Algorithms\PAA-Sorting-Algorithms\PAA-Sorting-Algorithms\Data\"))
+            foreach (var filePath in Directory.GetFiles(args[0]))
             {
                 using (var file = File.OpenRead(filePath))
                 {
