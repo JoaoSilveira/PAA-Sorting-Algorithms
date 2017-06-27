@@ -3,27 +3,107 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Security.AccessControl;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PAA_Sorting_Algorithms
 {
     public class Program
     {
-        public delegate SortReport Sort<T>(ref T[] collection) where T : IComparable;
+        public delegate SortStatistics Sort<T>(ref T[] collection) where T : IComparable;
+
+        public static readonly Dictionary<string, string> Order;
+
+        static Program()
+        {
+            Order = new Dictionary<string, string>
+            {
+                {"a", "Aleatory"},
+                {"d", "Decrescent"},
+                {"po", "Partially Ordered"},
+                {"o", "Ordered"}
+            };
+        }
 
         static void Main(string[] args)
         {
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
+            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+            foreach (var filePath in Directory.GetFiles(@"C:\Users\Malaquias\Source\Repos\PAA-Sorting-Algorithms\PAA-Sorting-Algorithms\PAA-Sorting-Algorithms\Data\"))
+            {
+                using (var file = File.OpenRead(filePath))
+                {
+                    var match = Regex.Match(Path.GetFileNameWithoutExtension(filePath),
+                        @"^(?<order_type>[a-zA-Z]+)(?<vector_length>\d+)$");
+                    var orderType = match.Groups["order_type"].Value;
+                    var vectorLength = Convert.ToInt32(match.Groups["vector_length"].Value);
+
+                    RunFile(file, Order[orderType], vectorLength);
+                }
+            }
+        }
+
+        private static void RunFile(Stream file, string order, int vectorLength)
+        {
+            var originalVector = new int[vectorLength];
+
+            using (var reader = new StreamReader(file))
+            {
+                for (var i = 0; i < vectorLength; i++)
+                {
+                    originalVector[i] = Convert.ToInt32(reader.ReadLine());
+                }
+            }
+
+            foreach (var methodInfo in typeof(SortingTypes<int>).GetMethods(BindingFlags.Public | BindingFlags.Static))
+            {
+                var rep = new SortReport(Regex.Replace(methodInfo.Name, "(\\B[A-Z])", " $1"), vectorLength, order);
+                var copy = new int[vectorLength];
+                Array.Copy(originalVector, copy, vectorLength);
+
+                Console.WriteLine("{0} {1}", rep.Algorithm, rep.VectorSize);
+
+                rep.Statistics = (SortStatistics)methodInfo.Invoke(null, new object[] { copy });
+
+                SaveReport(rep);
+            }
+        }
+
+        private static void SaveReport(SortReport rep)
+        {
+            File.AppendAllLines($"{rep.OrderType}.txt", new[] { $"{rep.Algorithm} - {rep.VectorSize} - {rep.Statistics.Comparations} - {rep.Statistics.Swaps} - {rep.Statistics.Time}" });
         }
     }
 
     public class SortReport
     {
+        public SortStatistics Statistics { get; set; }
+
+        public string Algorithm { get; set; }
+
+        public int VectorSize { get; set; }
+
+        public string OrderType { get; set; }
+
+        public SortReport(string algorithm, int vectorSize, string orderType)
+        {
+            Algorithm = algorithm;
+            VectorSize = vectorSize;
+            OrderType = orderType;
+        }
+    }
+
+    public class SortStatistics
+    {
         public int Swaps { get; set; }
         public int Comparations { get; set; }
         public TimeSpan Time { get; set; }
 
-        public SortReport()
+        public SortStatistics()
         {
             Swaps = 0;
             Comparations = 0;
@@ -33,9 +113,9 @@ namespace PAA_Sorting_Algorithms
 
     public static class SortingTypes<T> where T : IComparable
     {
-        public static SortReport BubbleSort(ref T[] collection)
+        public static SortStatistics BubbleSort(ref T[] collection)
         {
-            var rep = new SortReport();
+            var rep = new SortStatistics();
 
             bool madeChanges;
             var itemCount = collection.Length;
@@ -68,9 +148,9 @@ namespace PAA_Sorting_Algorithms
             return rep;
         }
 
-        public static SortReport InsertionSort(ref T[] collection)
+        public static SortStatistics InsertionSort(ref T[] collection)
         {
-            var rep = new SortReport();
+            var rep = new SortStatistics();
 
             var watch = Stopwatch.StartNew();
 
@@ -84,14 +164,13 @@ namespace PAA_Sorting_Algorithms
                 {
                     ++rep.Comparations;
 
-                    if (j == 0)
-                    {
-                        --rep.Comparations;
-                        break;
-                    }
-
                     ++rep.Swaps;
                     collection[j] = collection[--j];
+
+                    if (j != 0) continue;
+
+                    --rep.Comparations;
+                    break;
                 }
                 ++rep.Comparations;
 
@@ -104,9 +183,9 @@ namespace PAA_Sorting_Algorithms
             return rep;
         }
 
-        public static SortReport SelectionSort(ref T[] collection)
+        public static SortStatistics SelectionSort(ref T[] collection)
         {
-            var rep = new SortReport();
+            var rep = new SortStatistics();
 
             var watch = Stopwatch.StartNew();
 
@@ -136,9 +215,9 @@ namespace PAA_Sorting_Algorithms
             return rep;
         }
 
-        public static SortReport MergeSort(ref T[] collection)
+        public static SortStatistics MergeSort(ref T[] collection)
         {
-            var rep = new SortReport();
+            var rep = new SortStatistics();
 
             var watch = Stopwatch.StartNew();
 
@@ -151,14 +230,14 @@ namespace PAA_Sorting_Algorithms
             return rep;
         }
 
-        public static SortReport QuickSort(ref T[] collection)
+        public static SortStatistics QuickSort(ref T[] collection)
         {
-            var rep = new SortReport();
+            var rep = new SortStatistics();
 
             var watch = Stopwatch.StartNew();
 
             watch.Start();
-            QuickHelper<T>.Sort(ref collection, 0, collection.Length, ref rep);
+            QuickHelper<T>.Sort(ref collection, 0, collection.Length - 1, ref rep);
             watch.Stop();
 
             rep.Time = watch.Elapsed;
@@ -166,9 +245,9 @@ namespace PAA_Sorting_Algorithms
             return rep;
         }
 
-        public static SortReport CountingSort(ref int[] collection)
+        public static SortStatistics CountingSort(ref int[] collection)
         {
-            var rep = new SortReport();
+            var rep = new SortStatistics();
 
             var watch = Stopwatch.StartNew();
 
@@ -199,9 +278,9 @@ namespace PAA_Sorting_Algorithms
             return rep;
         }
 
-        public static SortReport BucketSort(ref int[] collection)
+        public static SortStatistics BucketSort(ref int[] collection)
         {
-            var rep = new SortReport();
+            var rep = new SortStatistics();
 
             var watch = Stopwatch.StartNew();
 
@@ -242,7 +321,7 @@ namespace PAA_Sorting_Algorithms
 
     public static class MergeHelper<T> where T : IComparable
     {
-        public static void Sort(ref T[] collection, int init, int end, ref SortReport rep)
+        public static void Sort(ref T[] collection, int init, int end, ref SortStatistics rep)
         {
             var middle = (init + end) / 2;
 
@@ -260,14 +339,14 @@ namespace PAA_Sorting_Algorithms
                 while (collection[j - 1].CompareTo(entry) > 0)
                 {
                     ++rep.Comparations;
-                    if (j == init)
-                    {
-                        --rep.Comparations;
-                        break;
-                    }
 
                     ++rep.Swaps;
                     collection[j] = collection[--j];
+
+                    if (j != init) continue;
+
+                    --rep.Comparations;
+                    break;
                 }
                 ++rep.Comparations;
                 collection[j] = entry;
@@ -277,42 +356,58 @@ namespace PAA_Sorting_Algorithms
 
     public static class QuickHelper<T> where T : IComparable
     {
-        public static void Sort(ref T[] collection, int init, int end, ref SortReport rep)
+        public static void Sort(ref T[] collection, int init, int end, ref SortStatistics rep)
         {
-            if (end - init < 2)
-                return;
+            if (init >= end) return;
 
-            var pivot = (init + end) / 2;
-            var right = init;
-            var left = end;
+            var pivot = Partition(ref collection, init, end, ref rep);
 
-            while (left <= right)
+            if (pivot > 1)
             {
-                while (collection[left].CompareTo(collection[pivot]) < 0)
+                Sort(ref collection, init, pivot - 1, ref rep);
+            }
+            if (pivot + 1 < end)
+            {
+                Sort(ref collection, pivot + 1, end, ref rep);
+            }
+        }
+
+        private static int Partition(ref T[] collection, int left, int right, ref SortStatistics rep)
+        {
+            var pivot = collection[left];
+            while (true)
+            {
+
+                while (collection[left].CompareTo(pivot) < 0)
                 {
+                    left++;
                     ++rep.Comparations;
-                    ++left;
                 }
                 ++rep.Comparations;
 
-                while (collection[right].CompareTo(collection[pivot]) > 0)
+                while (collection[right].CompareTo(pivot) > 0)
+                {
+                    right--;
+                    ++rep.Comparations;
+                }
+                ++rep.Comparations;
+
+                if (left < right)
                 {
                     ++rep.Comparations;
-                    --right;
+                    if (collection[left].CompareTo(collection[right]) == 0) return right;
+
+                    var temp = collection[left];
+                    collection[left] = collection[right];
+                    collection[right] = temp;
+
+                    rep.Swaps++;
                 }
-                rep.Comparations += 2;
-
-                if (collection[left].CompareTo(collection[right]) >= 0) continue;
-
-                var aux = collection[left];
-                collection[left++] = collection[right];
-                collection[right--] = aux;
-
-                ++rep.Swaps;
+                else
+                {
+                    return right;
+                }
             }
-
-            Sort(ref collection, init, right, ref rep);
-            Sort(ref collection, left, end, ref rep);
         }
     }
 }

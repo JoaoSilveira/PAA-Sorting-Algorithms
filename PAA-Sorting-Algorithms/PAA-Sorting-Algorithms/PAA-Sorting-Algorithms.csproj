@@ -30,6 +30,10 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>PAA_Sorting_Algorithms.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -47,6 +51,100 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Data\a100.txt" />
+    <Content Include="Data\a1000.txt" />
+    <Content Include="Data\a10000.txt" />
+    <Content Include="Data\a100000.txt" />
+    <Content Include="Data\a1000000.txt" />
+    <Content Include="Data\a10000000.txt" />
+    <Content Include="Data\a1250000.txt" />
+    <Content Include="Data\a15000.txt" />
+    <Content Include="Data\a1500000.txt" />
+    <Content Include="Data\a200.txt" />
+    <Content Include="Data\a2000.txt" />
+    <Content Include="Data\a200000.txt" />
+    <Content Include="Data\a2000000.txt" />
+    <Content Include="Data\a30000.txt" />
+    <Content Include="Data\a500.txt" />
+    <Content Include="Data\a5000.txt" />
+    <Content Include="Data\a50000.txt" />
+    <Content Include="Data\a500000.txt" />
+    <Content Include="Data\a5000000.txt" />
+    <Content Include="Data\a7500.txt" />
+    <Content Include="Data\a75000.txt" />
+    <Content Include="Data\a750000.txt" />
+    <Content Include="Data\a7500000.txt" />
+    <Content Include="Data\d100.txt" />
+    <Content Include="Data\d1000.txt" />
+    <Content Include="Data\d10000.txt" />
+    <Content Include="Data\d100000.txt" />
+    <Content Include="Data\d1000000.txt" />
+    <Content Include="Data\d10000000.txt" />
+    <Content Include="Data\d1250000.txt" />
+    <Content Include="Data\d15000.txt" />
+    <Content Include="Data\d1500000.txt" />
+    <Content Include="Data\d200.txt" />
+    <Content Include="Data\d2000.txt" />
+    <Content Include="Data\d200000.txt" />
+    <Content Include="Data\d2000000.txt" />
+    <Content Include="Data\d30000.txt" />
+    <Content Include="Data\d500.txt" />
+    <Content Include="Data\d5000.txt" />
+    <Content Include="Data\d50000.txt" />
+    <Content Include="Data\d500000.txt" />
+    <Content Include="Data\d5000000.txt" />
+    <Content Include="Data\d7500.txt" />
+    <Content Include="Data\d75000.txt" />
+    <Content Include="Data\d750000.txt" />
+    <Content Include="Data\d7500000.txt" />
+    <Content Include="Data\o100.txt" />
+    <Content Include="Data\o1000.txt" />
+    <Content Include="Data\o10000.txt" />
+    <Content Include="Data\o100000.txt" />
+    <Content Include="Data\o1000000.txt" />
+    <Content Include="Data\o10000000.txt" />
+    <Content Include="Data\o1250000.txt" />
+    <Content Include="Data\o15000.txt" />
+    <Content Include="Data\o1500000.txt" />
+    <Content Include="Data\o200.txt" />
+    <Content Include="Data\o2000.txt" />
+    <Content Include="Data\o200000.txt" />
+    <Content Include="Data\o2000000.txt" />
+    <Content Include="Data\o30000.txt" />
+    <Content Include="Data\o500.txt" />
+    <Content Include="Data\o5000.txt" />
+    <Content Include="Data\o50000.txt" />
+    <Content Include="Data\o500000.txt" />
+    <Content Include="Data\o5000000.txt" />
+    <Content Include="Data\o7500.txt" />
+    <Content Include="Data\o75000.txt" />
+    <Content Include="Data\o750000.txt" />
+    <Content Include="Data\o7500000.txt" />
+    <Content Include="Data\po100.txt" />
+    <Content Include="Data\po1000.txt" />
+    <Content Include="Data\po10000.txt" />
+    <Content Include="Data\po100000.txt" />
+    <Content Include="Data\po1000000.txt" />
+    <Content Include="Data\po10000000.txt" />
+    <Content Include="Data\po1250000.txt" />
+    <Content Include="Data\po15000.txt" />
+    <Content Include="Data\po1500000.txt" />
+    <Content Include="Data\po200.txt" />
+    <Content Include="Data\po2000.txt" />
+    <Content Include="Data\po200000.txt" />
+    <Content Include="Data\po2000000.txt" />
+    <Content Include="Data\po30000.txt" />
+    <Content Include="Data\po500.txt" />
+    <Content Include="Data\po5000.txt" />
+    <Content Include="Data\po50000.txt" />
+    <Content Include="Data\po500000.txt" />
+    <Content Include="Data\po5000000.txt" />
+    <Content Include="Data\po7500.txt" />
+    <Content Include="Data\po75000.txt" />
+    <Content Include="Data\po750000.txt" />
+    <Content Include="Data\po7500000.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
