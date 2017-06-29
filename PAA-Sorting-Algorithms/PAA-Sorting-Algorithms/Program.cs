@@ -13,8 +13,6 @@ namespace PAA_Sorting_Algorithms
 {
     public class Program
     {
-        public delegate SortStatistics Sort<T>(ref T[] collection) where T : IComparable;
-
         public static readonly Dictionary<string, string> Order;
 
         static Program()
@@ -37,7 +35,7 @@ namespace PAA_Sorting_Algorithms
             }
 
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
-            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
             foreach (var filePath in Directory.GetFiles(args[0]))
             {
                 using (var file = File.OpenRead(filePath))
@@ -70,7 +68,7 @@ namespace PAA_Sorting_Algorithms
                 var copy = new int[vectorLength];
                 Array.Copy(originalVector, copy, vectorLength);
 
-                Console.WriteLine("{0} {1}", rep.Algorithm, rep.VectorSize);
+                Console.WriteLine("{0} {1} - Started at {2}", rep.Algorithm, rep.VectorSize, DateTime.Now);
 
                 rep.Statistics = (SortStatistics)methodInfo.Invoke(null, new object[] { copy });
 

@@ -4,8 +4,8 @@ namespace PAA_Sorting_Algorithms
 {
     public class SortStatistics
     {
-        public int Swaps { get; set; }
-        public int Comparations { get; set; }
+        public ulong Swaps { get; set; }
+        public ulong Comparations { get; set; }
         public TimeSpan Time { get; set; }
 
         public SortStatistics()
