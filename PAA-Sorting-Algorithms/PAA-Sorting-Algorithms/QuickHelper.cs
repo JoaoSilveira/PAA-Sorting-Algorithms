@@ -6,54 +6,55 @@ namespace PAA_Sorting_Algorithms
     {
         public static void Sort(ref T[] collection, int init, int end, ref SortStatistics rep)
         {
-            if (init >= end) return;
-
-            var pivot = Partition(ref collection, init, end, ref rep);
-
-            if (pivot > 1)
+            while (init < end)
             {
-                Sort(ref collection, init, pivot - 1, ref rep);
-            }
-            if (pivot + 1 < end)
-            {
-                Sort(ref collection, pivot + 1, end, ref rep);
-            }
-        }
+                var left = init + 1;
+                var right = end;
 
-        private static int Partition(ref T[] collection, int left, int right, ref SortStatistics rep)
-        {
-            var pivot = collection[left];
-            while (true)
-            {
+                var pivot = collection[left];
 
-                while (collection[left].CompareTo(pivot) < 0)
+                while (left <= right)
                 {
-                    left++;
-                    ++rep.Comparations;
-                }
-                ++rep.Comparations;
+                    if (collection[left].CompareTo(pivot) <= 0)
+                    {
+                        ++left;
+                        ++rep.Comparations;
+                        continue;
+                    }
+                    rep.Comparations++;
 
-                while (collection[right].CompareTo(pivot) > 0)
-                {
-                    right--;
+                    if (collection[right].CompareTo(pivot) > 0)
+                    {
+                        --right;
+                        ++rep.Comparations;
+                        continue;
+                    }
                     ++rep.Comparations;
-                }
-                ++rep.Comparations;
-
-                if (left < right)
-                {
-                    ++rep.Comparations;
-                    if (collection[left].CompareTo(collection[right]) == 0) return right;
+                    ++rep.Swaps;
 
                     var temp = collection[left];
                     collection[left] = collection[right];
                     collection[right] = temp;
 
-                    rep.Swaps++;
+                    ++left;
+                    --right;
+                }
+
+                ++rep.Swaps;
+                collection[init] = collection[right];
+                collection[right] = pivot;
+
+                var pos = right;
+
+                if (pos - init < end - pos)
+                {
+                    Sort(ref collection, init, pos - 1, ref rep);
+                    init = pos + 1;
                 }
                 else
                 {
-                    return right;
+                    Sort(ref collection, pos + 1, end, ref rep);
+                    end = pos - 1;
                 }
             }
         }

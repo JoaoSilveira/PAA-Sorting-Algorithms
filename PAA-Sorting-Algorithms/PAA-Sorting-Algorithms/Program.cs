@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Security.AccessControl;
 using System.Text;
@@ -28,26 +29,43 @@ namespace PAA_Sorting_Algorithms
 
         static void Main(string[] args)
         {
-            if (args.Length != 1)
-            {
-                Console.WriteLine("Write the path to the data directory");
-                return;
-            }
+            //if (args.Length != 1)
+            //{
+            //    Console.WriteLine("Write the path to the data directory");
+            //    return;
+            //}
 
-            Thread.CurrentThread.Priority = ThreadPriority.Highest;
-            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
-            foreach (var filePath in Directory.GetFiles(args[0]))
+            foreach (var file in Directory.GetFiles(@"C:\Users\Malaquias\Source\Repos\PAA-Sorting-Algorithms\PAA-Sorting-Algorithms\PAA-Sorting-Algorithms\Data"))
             {
-                using (var file = File.OpenRead(filePath))
+                var arr = File.ReadAllLines(file).Select(q => Convert.ToInt32(q)).ToArray();
+
+                var rep = SortingTypes<int>.MergeSort(ref arr);
+
+                for (var i = 0; i < arr.Length - 1; i++)
                 {
-                    var match = Regex.Match(Path.GetFileNameWithoutExtension(filePath),
-                        @"^(?<order_type>[a-zA-Z]+)(?<vector_length>\d+)$");
-                    var orderType = match.Groups["order_type"].Value;
-                    var vectorLength = Convert.ToInt32(match.Groups["vector_length"].Value);
-
-                    RunFile(file, Order[orderType], vectorLength);
+                    if (arr[i] > arr[i + 1])
+                    {
+                        Console.WriteLine("Deu ruim");
+                        break;
+                    }
                 }
+                Console.WriteLine($"{Path.GetFileNameWithoutExtension(file)} || {rep.Comparations} - {rep.Swaps} - {rep.Time}");
             }
+
+            //Thread.CurrentThread.Priority = ThreadPriority.Highest;
+            //Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
+            //foreach (var filePath in Directory.GetFiles(args[0]))
+            //{
+            //    using (var file = File.OpenRead(filePath))
+            //    {
+            //        var match = Regex.Match(Path.GetFileNameWithoutExtension(filePath),
+            //            @"^(?<order_type>[a-zA-Z]+)(?<vector_length>\d+)$");
+            //        var orderType = match.Groups["order_type"].Value;
+            //        var vectorLength = Convert.ToInt32(match.Groups["vector_length"].Value);
+
+            //        RunFile(file, Order[orderType], vectorLength);
+            //    }
+            //}
         }
 
         private static void RunFile(Stream file, string order, int vectorLength)
