@@ -29,43 +29,26 @@ namespace PAA_Sorting_Algorithms
 
         static void Main(string[] args)
         {
-            //if (args.Length != 1)
-            //{
-            //    Console.WriteLine("Write the path to the data directory");
-            //    return;
-            //}
-
-            foreach (var file in Directory.GetFiles(@"C:\Users\Malaquias\Source\Repos\PAA-Sorting-Algorithms\PAA-Sorting-Algorithms\PAA-Sorting-Algorithms\Data"))
+            if (args.Length != 1)
             {
-                var arr = File.ReadAllLines(file).Select(q => Convert.ToInt32(q)).ToArray();
-
-                var rep = SortingTypes<int>.MergeSort(ref arr);
-
-                for (var i = 0; i < arr.Length - 1; i++)
-                {
-                    if (arr[i] > arr[i + 1])
-                    {
-                        Console.WriteLine("Deu ruim");
-                        break;
-                    }
-                }
-                Console.WriteLine($"{Path.GetFileNameWithoutExtension(file)} || {rep.Comparations} - {rep.Swaps} - {rep.Time}");
+                Console.WriteLine("Write the path to the data directory");
+                return;
             }
 
-            //Thread.CurrentThread.Priority = ThreadPriority.Highest;
-            //Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
-            //foreach (var filePath in Directory.GetFiles(args[0]))
-            //{
-            //    using (var file = File.OpenRead(filePath))
-            //    {
-            //        var match = Regex.Match(Path.GetFileNameWithoutExtension(filePath),
-            //            @"^(?<order_type>[a-zA-Z]+)(?<vector_length>\d+)$");
-            //        var orderType = match.Groups["order_type"].Value;
-            //        var vectorLength = Convert.ToInt32(match.Groups["vector_length"].Value);
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
+            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
+            foreach (var filePath in Directory.GetFiles(args[0]))
+            {
+                using (var file = File.OpenRead(filePath))
+                {
+                    var match = Regex.Match(Path.GetFileNameWithoutExtension(filePath),
+                        @"^(?<order_type>[a-zA-Z]+)(?<vector_length>\d+)$");
+                    var orderType = match.Groups["order_type"].Value;
+                    var vectorLength = Convert.ToInt32(match.Groups["vector_length"].Value);
 
-            //        RunFile(file, Order[orderType], vectorLength);
-            //    }
-            //}
+                    RunFile(file, Order[orderType], vectorLength);
+                }
+            }
         }
 
         private static void RunFile(Stream file, string order, int vectorLength)
@@ -86,7 +69,7 @@ namespace PAA_Sorting_Algorithms
                 var copy = new int[vectorLength];
                 Array.Copy(originalVector, copy, vectorLength);
 
-                Console.WriteLine("{0} {1} - Started at {2}", rep.Algorithm, rep.VectorSize, DateTime.Now);
+                Console.WriteLine("{0} {1} {2} - Started at {3}", rep.Algorithm, rep.VectorSize, order, DateTime.Now);
 
                 rep.Statistics = (SortStatistics)methodInfo.Invoke(null, new object[] { copy });
 
