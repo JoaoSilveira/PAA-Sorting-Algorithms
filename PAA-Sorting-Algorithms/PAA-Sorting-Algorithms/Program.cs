@@ -65,6 +65,11 @@ namespace PAA_Sorting_Algorithms
 
             foreach (var methodInfo in typeof(SortingTypes<int>).GetMethods(BindingFlags.Public | BindingFlags.Static))
             {
+                if (Regex.IsMatch(methodInfo.Name, @"^(Bubble|Insertion|Selection)Sort$"))
+                {
+                    continue;
+                }
+
                 var rep = new SortReport(Regex.Replace(methodInfo.Name, "(\\B[A-Z])", " $1"), vectorLength, order);
                 var copy = new int[vectorLength];
                 Array.Copy(originalVector, copy, vectorLength);
