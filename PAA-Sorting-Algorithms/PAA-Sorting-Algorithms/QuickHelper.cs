@@ -6,56 +6,45 @@ namespace PAA_Sorting_Algorithms
     {
         public static void Sort(ref T[] collection, int init, int end, ref SortStatistics rep)
         {
-            while (init < end)
+            var left = init;
+            var right = end;
+            var pivot = collection[(init + end) / 2];
+
+            while (left <= right)
             {
-                var left = init + 1;
-                var right = end;
-
-                var pivot = collection[left];
-
-                while (left <= right)
+                while (collection[left].CompareTo(pivot) < 0)
                 {
-                    if (collection[left].CompareTo(pivot) <= 0)
-                    {
-                        ++left;
-                        ++rep.Comparations;
-                        continue;
-                    }
+                    left++;
                     rep.Comparations++;
-
-                    if (collection[right].CompareTo(pivot) > 0)
-                    {
-                        --right;
-                        ++rep.Comparations;
-                        continue;
-                    }
-                    ++rep.Comparations;
-                    ++rep.Swaps;
-
-                    var temp = collection[left];
-                    collection[left] = collection[right];
-                    collection[right] = temp;
-
-                    ++left;
-                    --right;
                 }
+                rep.Comparations++;
 
-                ++rep.Swaps;
-                collection[init] = collection[right];
-                collection[right] = pivot;
-
-                var pos = right;
-
-                if (pos - init < end - pos)
+                while (collection[right].CompareTo(pivot) > 0)
                 {
-                    Sort(ref collection, init, pos - 1, ref rep);
-                    init = pos + 1;
+                    right--;
+                    rep.Comparations++;
                 }
-                else
-                {
-                    Sort(ref collection, pos + 1, end, ref rep);
-                    end = pos - 1;
-                }
+                rep.Comparations++;
+
+                if (left > right) continue;
+
+                rep.Swaps++;
+
+                var tmp = collection[left];
+                collection[left] = collection[right];
+                collection[right] = tmp;
+
+                left++;
+                right--;
+            }
+
+            if (init < right)
+            {
+                Sort(ref collection, init, right, ref rep);
+            }
+            if (left < end)
+            {
+                Sort(ref collection, left, end, ref rep);
             }
         }
     }
